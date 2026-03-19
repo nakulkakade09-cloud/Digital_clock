@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Timepiece</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Orbitron:wght@500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.5);
+            --accent: #10b981;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #1e293b 0%, var(--bg-dark) 100%);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .container {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px;
+            width: 450px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px var(--primary-glow);
+            transition: all 0.3s ease;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 12px;
+            padding: 5px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px 0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        .display-area {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 64px;
+            text-align: center;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin: 30px 0;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            font-variant-numeric: tabular-nums;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        button.action-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        button.action-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        button.action-btn:active {
+            transform: translateY(0);
+        }
+
+        button.btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        button.btn-primary:hover {
+            background: #2563eb;
+        }
+
+        button.btn-success {
+            background: var(--accent);
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+
+        button.btn-success:hover {
+            background: #059669;
+        }
+
+        button.btn-danger {
+            background: var(--danger);
+            border-color: var(--danger);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+
+        button.btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Alarm Specific */
+        .alarm-inputs {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .alarm-inputs input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-main);
+            font-size: 24px;
+            width: 70px;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            outline: none;
+        }
+
+        .alarm-inputs input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .alarm-status {
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            min-height: 20px;
+        }
+
+        /* Stopwatch Specific */
+        .ms {
+            font-size: 32px;
+            color: var(--text-muted);
+        }
+
+        .alarm-ringing {
+            animation: pulse-ring 1s infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+                border-color: var(--danger);
+            }
+
+            70% {
+                box-shadow: 0 0 0 20px rgba(239, 68, 68, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+                border-color: rgba(255, 255, 255, 0.1);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container" id="app-container">
+        <div class="tabs">
+            <button class="tab-btn active" data-target="clock-section">Clock</button>
+            <button class="tab-btn" data-target="alarm-section">Alarm</button>
+            <button class="tab-btn" data-target="stopwatch-section">Stopwatch</button>
+        </div>
+
+        <!-- Clock Section -->
+        <div class="section active" id="clock-section">
+            <div class="display-area" id="clock-display">00:00:00</div>
+            <div class="alarm-status" id="current-date">--</div>
+        </div>
+
+        <!-- Alarm Section -->
+        <div class="section" id="alarm-section">
+            <div class="display-area" id="alarm-clock-display">00:00:00</div>
+
+            <div class="alarm-inputs" id="alarm-setter">
+                <input type="number" id="alarm-h" min="0" max="23" placeholder="HH" value="00">
+                <span>:</span>
+                <input type="number" id="alarm-m" min="0" max="59" placeholder="MM" value="00">
+            </div>
+
+            <div class="alarm-status" id="alarm-status-text">No alarm set</div>
+
+            <div class="controls">
+                <button class="action-btn btn-primary" id="btn-set-alarm">Set Alarm</button>
+                <button class="action-btn" id="btn-clear-alarm" style="display:none;">Clear</button>
+                <button class="action-btn btn-danger" id="btn-stop-alarm" style="display:none;">Stop Sound</button>
+            </div>
+        </div>
+
+        <!-- Stopwatch Section -->
+        <div class="section" id="stopwatch-section">
+            <div class="display-area">
+                <span id="sw-mins">00</span>:<span id="sw-secs">00</span>.<span class="ms" id="sw-ms">00</span>
+            </div>
+            <div class="controls">
+                <button class="action-btn btn-success" id="btn-start-sw">Start</button>
+                <button class="action-btn btn-danger" id="btn-stop-sw" style="display:none;">Stop</button>
+                <button class="action-btn" id="btn-reset-sw">Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab Navigation
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const sections = document.querySelectorAll('.section');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                sections.forEach(s => s.classList.remove('active'));
+
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.target).classList.add('active');
+            });
+        });
+
+        // Add 0 prefix
+        const pad = (num) => String(num).padStart(2, '0');
+
+        // Clock Logic
+        const clockDisplay = document.getElementById('clock-display');
+        const alarmClockDisplay = document.getElementById('alarm-clock-display');
+        const currentDate = document.getElementById('current-date');
+
+        let isAlarmSet = false;
+        let alarmTime = ""; // Format HH:MM
+        let expectedAlarmTimeSecs = ""; // HH:MM:00 for strict equality just in case
+        let isAlarmRinging = false;
+        let alarmAudio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+        alarmAudio.loop = true;
+
+        const container = document.getElementById('app-container');
+
+        function updateClock() {
+            const now = new Date();
+            const h = pad(now.getHours());
+            const m = pad(now.getMinutes());
+            const s = pad(now.getSeconds());
+            const timeStr = `${h}:${m}:${s}`;
+
+            clockDisplay.textContent = timeStr;
+            alarmClockDisplay.textContent = timeStr;
+
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            currentDate.textContent = now.toLocaleDateString(undefined, options);
+
+            // Check Alarm
+            if (isAlarmSet && !isAlarmRinging) {
+                const currentHm = `${h}:${m}`;
+                // Check if current hour and minute matches
+                if (currentHm === alarmTime && s === "00") {
+                    triggerAlarm();
+                }
+            }
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Alarm Logic
+        const btnSetAlarm = document.getElementById('btn-set-alarm');
+        const btnClearAlarm = document.getElementById('btn-clear-alarm');
+        const btnStopAlarm = document.getElementById('btn-stop-alarm');
+        const inputH = document.getElementById('alarm-h');
+        const inputM = document.getElementById('alarm-m');
+        const statusText = document.getElementById('alarm-status-text');
+        const alarmSetter = document.getElementById('alarm-setter');
+
+        inputH.addEventListener('change', () => { if (inputH.value < 0) inputH.value = 0; if (inputH.value > 23) inputH.value = 23; inputH.value = pad(inputH.value); });
+        inputM.addEventListener('change', () => { if (inputM.value < 0) inputM.value = 0; if (inputM.value > 59) inputM.value = 59; inputM.value = pad(inputM.value); });
+
+        btnSetAlarm.addEventListener('click', () => {
+            const h = pad(inputH.value || "0");
+            const m = pad(inputM.value || "0");
+            alarmTime = `${h}:${m}`;
+            isAlarmSet = true;
+            statusText.textContent = `Alarm set for ${alarmTime}`;
+            statusText.style.color = 'var(--accent)';
+
+            btnSetAlarm.style.display = 'none';
+            btnClearAlarm.style.display = 'inline-block';
+            alarmSetter.style.display = 'none';
+        });
+
+        btnClearAlarm.addEventListener('click', () => {
+            isAlarmSet = false;
+            statusText.textContent = `No alarm set`;
+            statusText.style.color = 'var(--text-muted)';
+
+            btnSetAlarm.style.display = 'inline-block';
+            btnClearAlarm.style.display = 'none';
+            alarmSetter.style.display = 'flex';
+        });
+
+        function triggerAlarm() {
+            isAlarmRinging = true;
+            container.classList.add('alarm-ringing');
+            alarmAudio.play().catch(e => console.log("Audio play blocked by browser:", e));
+
+            statusText.textContent = `ALARM RINGING!`;
+            statusText.style.color = 'var(--danger)';
+
+            btnClearAlarm.style.display = 'none';
+            btnStopAlarm.style.display = 'inline-block';
+
+            // Auto switch to alarm tab
+            tabBtns[1].click();
+        }
+
+        btnStopAlarm.addEventListener('click', () => {
+            isAlarmRinging = false;
+            isAlarmSet = false;
+            container.classList.remove('alarm-ringing');
+            alarmAudio.pause();
+            alarmAudio.currentTime = 0;
+
+            statusText.textContent = `No alarm set`;
+            statusText.style.color = 'var(--text-muted)';
+
+            btnStopAlarm.style.display = 'none';
+            btnSetAlarm.style.display = 'inline-block';
+            alarmSetter.style.display = 'flex';
+        });
+
+        // Stopwatch Logic
+        let swInterval;
+        let swStartTime;
+        let swElapsedTime = 0;
+        let isSwRunning = false;
+
+        const swMins = document.getElementById('sw-mins');
+        const swSecs = document.getElementById('sw-secs');
+        const swMsDisplay = document.getElementById('sw-ms');
+
+        const btnStartSw = document.getElementById('btn-start-sw');
+        const btnStopSw = document.getElementById('btn-stop-sw');
+        const btnResetSw = document.getElementById('btn-reset-sw');
+
+        function updateStopwatch() {
+            const now = Date.now();
+            const diff = swElapsedTime + (isSwRunning ? (now - swStartTime) : 0);
+
+            let m = Math.floor(diff / 60000);
+            let s = Math.floor((diff % 60000) / 1000);
+            let ms = Math.floor((diff % 1000) / 10);
+
+            swMins.textContent = pad(m);
+            swSecs.textContent = pad(s);
+            swMsDisplay.textContent = pad(ms);
+        }
+
+        btnStartSw.addEventListener('click', () => {
+            if (!isSwRunning) {
+                isSwRunning = true;
+                swStartTime = Date.now();
+                swInterval = setInterval(updateStopwatch, 10);
+
+                btnStartSw.style.display = 'none';
+                btnStopSw.style.display = 'inline-block';
+            }
+        });
+
+        btnStopSw.addEventListener('click', () => {
+            if (isSwRunning) {
+                isSwRunning = false;
+                clearInterval(swInterval);
+                swElapsedTime += (Date.now() - swStartTime);
+
+                btnStartSw.style.display = 'inline-block';
+                btnStopSw.style.display = 'none';
+                btnStartSw.textContent = 'Resume';
+            }
+        });
+
+        btnResetSw.addEventListener('click', () => {
+            isSwRunning = false;
+            clearInterval(swInterval);
+            swElapsedTime = 0;
+            updateStopwatch();
+
+            btnStartSw.style.display = 'inline-block';
+            btnStartSw.textContent = 'Start';
+            btnStopSw.style.display = 'none';
+        });
+
+    </script>
+</body>
+
+</html>

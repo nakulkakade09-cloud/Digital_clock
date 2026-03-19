@@ -1,0 +1,12 @@
+DIGITAL CLOCK DATABASE
+
+[ALARMS]
+
+ID | HOUR | MINUTE | STATUS
+1  | 07   | 30     | ON
+2  | 18   | 00     | OFF
+
+
+[CLOCK_HISTORY]
+
+TIME

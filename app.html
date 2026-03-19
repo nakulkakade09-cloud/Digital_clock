@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chronos - Modern Digital Clock</title>
+    <link rel="stylesheet" href="app.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app" class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo">
+                <i class="fas fa-clock"></i> <span>Chronos</span>
+            </div>
+            <ul class="nav-links">
+                <li data-tab="clock" class="active"><i class="fas fa-home"></i> <span>Clock</span></li>
+                <li data-tab="alarm"><i class="fas fa-bell"></i> <span>Alarms</span></li>
+                <li data-tab="stopwatch"><i class="fas fa-stopwatch"></i> <span>Stopwatch</span></li>
+                <li data-tab="timer"><i class="fas fa-hourglass-half"></i> <span>Timer</span></li>
+                <li data-tab="worldclock"><i class="fas fa-globe"></i> <span>World Clock</span></li>
+                <li data-tab="weather"><i class="fas fa-cloud-sun"></i> <span>Weather</span></li>
+                <li data-tab="calendar"><i class="fas fa-calendar-alt"></i> <span>Calendar</span></li>
+                <li data-tab="pomodoro"><i class="fas fa-brain"></i> <span>Pomodoro</span></li>
+                <li data-tab="settings"><i class="fas fa-cog"></i> <span>Settings & Stats</span></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="content">
+            <!-- Clock Tab -->
+            <section id="clock-tab" class="tab-pane active">
+                <div class="clock-widget">
+                    <div class="time-wrapper">
+                        <span id="main-time">00:00:00</span>
+                        <span id="main-ampm">AM</span>
+                    </div>
+                    <div id="main-date" class="date-wrapper">Monday, Jan 1, 2024</div>
+                </div>
+            </section>
+
+            <!-- Alarm Tab -->
+            <section id="alarm-tab" class="tab-pane">
+                <h2><i class="fas fa-bell"></i> Alarms</h2>
+                <div class="card">
+                    <form id="alarm-form" class="alarm-controls">
+                        <input type="time" id="alarm-time" required>
+                        <select id="alarm-tone">
+                            <option value="default">Default Beep</option>
+                            <option value="file">Custom File...</option>
+                        </select>
+                        <input type="file" id="alarm-file" accept="audio/*" style="display:none">
+                        <label>
+                            <input type="checkbox" id="alarm-challenge"> Math Challenge
+                        </label>
+                        <button type="submit" class="btn primary">Add Alarm</button>
+                    </form>
+                </div>
+                <div id="alarm-list" class="list-container"></div>
+            </section>
+
+            <!-- Stopwatch Tab -->
+            <section id="stopwatch-tab" class="tab-pane">
+                <h2><i class="fas fa-stopwatch"></i> Stopwatch</h2>
+                <div class="stopwatch-widget card">
+                    <div id="sw-display" class="large-display">00:00:00.00</div>
+                    <div class="controls">
+                        <button id="sw-start" class="btn primary">Start</button>
+                        <button id="sw-lap" class="btn secondary">Lap</button>
+                        <button id="sw-reset" class="btn danger">Reset</button>
+                    </div>
+                    <ul id="sw-laps" class="laps-list"></ul>
+                </div>
+            </section>
+
+            <!-- Timer Tab -->
+            <section id="timer-tab" class="tab-pane">
+                <h2><i class="fas fa-hourglass-half"></i> Timer</h2>
+                <div class="timer-widget card">
+                    <div class="timer-inputs">
+                        <input type="number" id="timer-h" placeholder="HH" min="0">
+                        <span>:</span>
+                        <input type="number" id="timer-m" placeholder="MM" min="0" max="59">
+                        <span>:</span>
+                        <input type="number" id="timer-s" placeholder="SS" min="0" max="59">
+                    </div>
+                    <div id="timer-display" class="large-display hidden">00:00:00</div>
+                    <div class="controls">
+                        <button id="timer-start" class="btn primary">Start</button>
+                        <button id="timer-reset" class="btn danger hidden">Reset</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- World Clock Tab -->
+            <section id="worldclock-tab" class="tab-pane">
+                <h2><i class="fas fa-globe"></i> World Clock</h2>
+                <div class="card add-city">
+                    <select id="wc-city-select">
+                        <option value="America/New_York">New York</option>
+                        <option value="Europe/London">London</option>
+                        <option value="Asia/Tokyo">Tokyo</option>
+                        <option value="Australia/Sydney">Sydney</option>
+                        <option value="Europe/Paris">Paris</option>
+                        <option value="Asia/Dubai">Dubai</option>
+                    </select>
+                    <button id="wc-add" class="btn primary">Add City</button>
+                </div>
+                <div id="wc-list" class="grid-container"></div>
+            </section>
+
+            <!-- Weather Tab -->
+            <section id="weather-tab" class="tab-pane">
+                <h2><i class="fas fa-cloud-sun"></i> Weather</h2>
+                <div class="weather-widget card" id="weather-container">
+                    <div class="loading">Fetching current location weather...</div>
+                </div>
+            </section>
+
+            <!-- Calendar Tab -->
+            <section id="calendar-tab" class="tab-pane">
+                <h2><i class="fas fa-calendar-alt"></i> Calendar & Tasks</h2>
+                <div class="calendar-container grid-2-col">
+                    <div class="card calendar-view">
+                        <div class="cal-header">
+                            <button id="cal-prev" class="btn text-btn">&lt;</button>
+                            <h3 id="cal-month-year">Month YYYY</h3>
+                            <button id="cal-next" class="btn text-btn">&gt;</button>
+                        </div>
+                        <div class="cal-grid" id="cal-days"></div>
+                    </div>
+                    <div class="card tasks-view">
+                        <h3>Tasks (<span id="task-date">Today</span>)</h3>
+                        <form id="task-form" class="flex-form">
+                            <input type="text" id="task-input" placeholder="New Task..." required>
+                            <button type="submit" class="btn primary">+</button>
+                        </form>
+                        <ul id="task-list" class="task-list"></ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pomodoro Tab -->
+            <section id="pomodoro-tab" class="tab-pane">
+                <h2><i class="fas fa-brain"></i> Pomodoro</h2>
+                <div class="pomodoro-widget card text-center">
+                    <div class="pomo-mode" id="pomo-mode">Focus Mode</div>
+                    <div id="pomo-display" class="large-display">25:00</div>
+                    <div class="controls">
+                        <button id="pomo-start" class="btn primary">Start</button>
+                        <button id="pomo-reset" class="btn danger">Reset</button>
+                    </div>
+                    <div class="pomo-settings mt-top">
+                        <label>Focus (min): <input type="number" id="pomo-focus-len" value="25" min="1"></label>
+                        <label>Break (min): <input type="number" id="pomo-break-len" value="5" min="1"></label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Tab -->
+            <section id="settings-tab" class="tab-pane">
+                <h2><i class="fas fa-cog"></i> Settings & Stats</h2>
+                <div class="grid-2-col">
+                    <div class="card">
+                        <h3>Settings</h3>
+                        <div class="setting-item">
+                            <label>Theme</label>
+                            <select id="theme-select">
+                                <option value="dark">Dark Mode</option>
+                                <option value="light">Light Mode</option>
+                                <option value="neon">Neon/Cyberpunk</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label>Time Format</label>
+                            <select id="time-format">
+                                <option value="12">12-Hour</option>
+                                <option value="24">24-Hour</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label>Voice Commands</label>
+                            <button id="toggle-voice" class="btn secondary">Enable Voice Control</button>
+                            <div class="voice-status" id="voice-status">Say "Set alarm at 6 AM"</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Statistics</h3>
+                        <ul class="stats-list">
+                            <li>Alarms Triggered: <span id="stat-alarms">0</span></li>
+                            <li>Snoozes Used: <span id="stat-snoozes">0</span></li>
+                            <li>Pomodoros Completed: <span id="stat-pomos">0</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Alarm Modal / Math Challenge -->
+    <div id="alarm-modal" class="modal hidden">
+        <div class="modal-content card">
+            <h2>⏰ ALARM RINGING!</h2>
+            <div id="alarm-time-display" class="large-text"></div>
+            
+            <div id="math-challenge" class="hidden mt-top">
+                <p>Solve to dismiss:</p>
+                <div id="math-problem" class="large-text"></div>
+                <input type="number" id="math-answer" placeholder="Answer">
+            </div>
+
+            <div class="modal-actions mt-top">
+                <button id="alarm-dismiss" class="btn danger">Dismiss</button>
+                <button id="alarm-snooze" class="btn secondary">Snooze (5m)</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
