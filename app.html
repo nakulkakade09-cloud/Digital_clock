@@ -3,59 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chronos - Modern Digital Clock</title>
+    <title>Chronos Pro — Ultimate Time Management Suite</title>
+    <meta name="description" content="Chronos Pro: A premium digital clock with world timezones, focus analytics, ambient sounds, habit tracking, and smart alarms.">
     <link rel="stylesheet" href="app.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Particle Canvas Background -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Dynamic Sky Gradient Overlay -->
+    <div id="sky-overlay"></div>
+
     <div id="app" class="app-container">
         <!-- Sidebar Navigation -->
-        <nav class="sidebar">
+        <nav class="sidebar" id="sidebar">
             <div class="logo">
-                <i class="fas fa-clock"></i> <span>Chronos</span>
+                <div class="logo-icon-wrap">
+                    <i class="fas fa-atom"></i>
+                </div>
+                <span>Chronos<span class="logo-pro">PRO</span></span>
             </div>
             <ul class="nav-links">
                 <li data-tab="clock" class="active"><i class="fas fa-home"></i> <span>Clock</span></li>
                 <li data-tab="alarm"><i class="fas fa-bell"></i> <span>Alarms</span></li>
                 <li data-tab="stopwatch"><i class="fas fa-stopwatch"></i> <span>Stopwatch</span></li>
                 <li data-tab="timer"><i class="fas fa-hourglass-half"></i> <span>Timer</span></li>
-                <li data-tab="worldclock"><i class="fas fa-globe"></i> <span>World Clock</span></li>
+                <li data-tab="worldclock"><i class="fas fa-globe-americas"></i> <span>World Clock</span></li>
                 <li data-tab="weather"><i class="fas fa-cloud-sun"></i> <span>Weather</span></li>
                 <li data-tab="calendar"><i class="fas fa-calendar-alt"></i> <span>Calendar</span></li>
                 <li data-tab="pomodoro"><i class="fas fa-brain"></i> <span>Pomodoro</span></li>
-                <li data-tab="settings"><i class="fas fa-cog"></i> <span>Settings & Stats</span></li>
+                <li data-tab="ambient"><i class="fas fa-music"></i> <span>Ambient</span></li>
+                <li data-tab="analytics"><i class="fas fa-chart-line"></i> <span>Analytics</span></li>
+                <li data-tab="breathing"><i class="fas fa-lungs"></i> <span>Breathing</span></li>
+                <li data-tab="capsule"><i class="fas fa-envelope-open-text"></i> <span>Time Capsule</span></li>
+                <li data-tab="settings"><i class="fas fa-cog"></i> <span>Settings</span></li>
             </ul>
+            <div class="sidebar-footer">
+                <div class="xp-bar-wrap" id="xp-bar-wrap">
+                    <div class="xp-level"><i class="fas fa-trophy"></i> Lv.<span id="xp-level">1</span></div>
+                    <div class="xp-track"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div>
+                    <div class="xp-text"><span id="xp-current">0</span>/<span id="xp-next">100</span> XP</div>
+                </div>
+                <div class="streak-badge" id="sidebar-streak">
+                    <i class="fas fa-fire"></i> <span id="streak-count">0</span> day streak
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mobile Bottom Nav -->
+        <nav class="mobile-nav" id="mobile-nav">
+            <button data-tab="clock" class="active"><i class="fas fa-home"></i></button>
+            <button data-tab="alarm"><i class="fas fa-bell"></i></button>
+            <button data-tab="stopwatch"><i class="fas fa-stopwatch"></i></button>
+            <button data-tab="timer"><i class="fas fa-hourglass-half"></i></button>
+            <button data-tab="worldclock"><i class="fas fa-globe-americas"></i></button>
+            <button data-tab="ambient"><i class="fas fa-music"></i></button>
+            <button data-tab="analytics"><i class="fas fa-chart-line"></i></button>
+            <button data-tab="settings"><i class="fas fa-cog"></i></button>
         </nav>
 
         <!-- Main Content Area -->
         <main class="content">
+            <!-- Keyboard Shortcut Hint -->
+            <div class="shortcut-hint" id="shortcut-hint">
+                Press <kbd>?</kbd> for shortcuts
+            </div>
+
             <!-- Clock Tab -->
             <section id="clock-tab" class="tab-pane active">
                 <div class="clock-widget">
-                    <div class="time-wrapper">
-                        <span id="main-time">00:00:00</span>
-                        <span id="main-ampm">AM</span>
+                    <div class="clock-ring" id="clock-ring">
+                        <svg viewBox="0 0 200 200" class="clock-svg">
+                            <circle cx="100" cy="100" r="90" class="ring-track"/>
+                            <circle cx="100" cy="100" r="90" class="ring-sec" id="ring-sec"/>
+                            <circle cx="100" cy="100" r="80" class="ring-min" id="ring-min"/>
+                            <circle cx="100" cy="100" r="70" class="ring-hr" id="ring-hr"/>
+                        </svg>
+                        <div class="clock-center">
+                            <div class="time-wrapper">
+                                <span id="main-time">00:00:00</span>
+                                <span id="main-ampm">AM</span>
+                            </div>
+                            <div id="main-date" class="date-wrapper">Loading...</div>
+                            <div class="greeting" id="greeting">Good Morning</div>
+                        </div>
                     </div>
-                    <div id="main-date" class="date-wrapper">Monday, Jan 1, 2024</div>
+                    <div class="quote-banner" id="quote-banner">
+                        <i class="fas fa-quote-left quote-icon"></i>
+                        <span id="quote-text">The only way to do great work is to love what you do.</span>
+                        <span id="quote-author">— Steve Jobs</span>
+                    </div>
+                    <div class="clock-extras">
+                        <div class="mini-stat"><i class="fas fa-sun"></i> Sunrise <span id="sunrise-time">--:--</span></div>
+                        <div class="mini-stat"><i class="fas fa-moon"></i> Sunset <span id="sunset-time">--:--</span></div>
+                        <div class="mini-stat"><i class="fas fa-battery-three-quarters"></i> Day <span id="day-progress">0%</span></div>
+                        <div class="mini-stat"><i class="fas fa-trophy"></i> XP <span id="mini-xp">0</span></div>
+                    </div>
                 </div>
+                    <!-- Zen Mode FAB -->
+                    <button class="zen-fab" id="zen-fab" title="Enter Zen Focus Mode"><i class="fas fa-spa"></i></button>
             </section>
 
             <!-- Alarm Tab -->
             <section id="alarm-tab" class="tab-pane">
-                <h2><i class="fas fa-bell"></i> Alarms</h2>
-                <div class="card">
+                <h2><i class="fas fa-bell"></i> Smart Alarms</h2>
+                <div class="card glass">
                     <form id="alarm-form" class="alarm-controls">
-                        <input type="time" id="alarm-time" required>
-                        <select id="alarm-tone">
-                            <option value="default">Default Beep</option>
-                            <option value="file">Custom File...</option>
-                        </select>
+                        <div class="form-row">
+                            <input type="time" id="alarm-time" required>
+                            <input type="text" id="alarm-label" placeholder="Label (e.g. Wake Up)">
+                        </div>
+                        <div class="form-row">
+                            <select id="alarm-tone">
+                                <option value="default">Classic Beep</option>
+                                <option value="gentle">Gentle Chime</option>
+                                <option value="file">Custom File...</option>
+                            </select>
+                            <select id="alarm-repeat">
+                                <option value="once">Once</option>
+                                <option value="daily">Daily</option>
+                                <option value="weekdays">Weekdays</option>
+                                <option value="weekends">Weekends</option>
+                            </select>
+                        </div>
                         <input type="file" id="alarm-file" accept="audio/*" style="display:none">
-                        <label>
-                            <input type="checkbox" id="alarm-challenge"> Math Challenge
-                        </label>
-                        <button type="submit" class="btn primary">Add Alarm</button>
+                        <div class="form-row">
+                            <label class="checkbox-label"><input type="checkbox" id="alarm-challenge"> 🔢 Math Challenge</label>
+                            <label class="checkbox-label"><input type="checkbox" id="alarm-sunrise"> 🌅 Sunrise Effect</label>
+                        </div>
+                        <button type="submit" class="btn primary glow-btn"><i class="fas fa-plus"></i> Add Alarm</button>
                     </form>
                 </div>
                 <div id="alarm-list" class="list-container"></div>
@@ -64,31 +142,49 @@
             <!-- Stopwatch Tab -->
             <section id="stopwatch-tab" class="tab-pane">
                 <h2><i class="fas fa-stopwatch"></i> Stopwatch</h2>
-                <div class="stopwatch-widget card">
-                    <div id="sw-display" class="large-display">00:00:00.00</div>
+                <div class="stopwatch-widget card glass">
+                    <div id="sw-display" class="large-display mono-glow">00:00:00.00</div>
                     <div class="controls">
-                        <button id="sw-start" class="btn primary">Start</button>
+                        <button id="sw-start" class="btn primary glow-btn">Start</button>
                         <button id="sw-lap" class="btn secondary">Lap</button>
                         <button id="sw-reset" class="btn danger">Reset</button>
                     </div>
-                    <ul id="sw-laps" class="laps-list"></ul>
+                    <div class="laps-wrapper">
+                        <ul id="sw-laps" class="laps-list"></ul>
+                    </div>
                 </div>
             </section>
 
             <!-- Timer Tab -->
             <section id="timer-tab" class="tab-pane">
                 <h2><i class="fas fa-hourglass-half"></i> Timer</h2>
-                <div class="timer-widget card">
-                    <div class="timer-inputs">
-                        <input type="number" id="timer-h" placeholder="HH" min="0">
-                        <span>:</span>
-                        <input type="number" id="timer-m" placeholder="MM" min="0" max="59">
-                        <span>:</span>
-                        <input type="number" id="timer-s" placeholder="SS" min="0" max="59">
+                <div class="timer-widget card glass">
+                    <div class="timer-ring-wrap">
+                        <svg viewBox="0 0 200 200" class="timer-svg" id="timer-ring-svg">
+                            <circle cx="100" cy="100" r="90" class="ring-track"/>
+                            <circle cx="100" cy="100" r="90" class="ring-timer" id="ring-timer"/>
+                        </svg>
+                        <div class="timer-center">
+                            <div class="timer-inputs" id="timer-inputs-wrap">
+                                <input type="number" id="timer-h" placeholder="H" min="0" value="0">
+                                <span>:</span>
+                                <input type="number" id="timer-m" placeholder="M" min="0" max="59" value="5">
+                                <span>:</span>
+                                <input type="number" id="timer-s" placeholder="S" min="0" max="59" value="0">
+                            </div>
+                            <div id="timer-display" class="large-display hidden">00:00:00</div>
+                        </div>
                     </div>
-                    <div id="timer-display" class="large-display hidden">00:00:00</div>
+                    <div class="timer-presets">
+                        <button class="btn secondary preset-btn" data-mins="1">1m</button>
+                        <button class="btn secondary preset-btn" data-mins="5">5m</button>
+                        <button class="btn secondary preset-btn" data-mins="10">10m</button>
+                        <button class="btn secondary preset-btn" data-mins="15">15m</button>
+                        <button class="btn secondary preset-btn" data-mins="30">30m</button>
+                        <button class="btn secondary preset-btn" data-mins="60">1h</button>
+                    </div>
                     <div class="controls">
-                        <button id="timer-start" class="btn primary">Start</button>
+                        <button id="timer-start" class="btn primary glow-btn">Start</button>
                         <button id="timer-reset" class="btn danger hidden">Reset</button>
                     </div>
                 </div>
@@ -96,17 +192,29 @@
 
             <!-- World Clock Tab -->
             <section id="worldclock-tab" class="tab-pane">
-                <h2><i class="fas fa-globe"></i> World Clock</h2>
-                <div class="card add-city">
+                <h2><i class="fas fa-globe-americas"></i> World Clock</h2>
+                <div class="card glass add-city">
                     <select id="wc-city-select">
-                        <option value="America/New_York">New York</option>
-                        <option value="Europe/London">London</option>
-                        <option value="Asia/Tokyo">Tokyo</option>
-                        <option value="Australia/Sydney">Sydney</option>
-                        <option value="Europe/Paris">Paris</option>
-                        <option value="Asia/Dubai">Dubai</option>
+                        <option value="America/New_York">🇺🇸 New York</option>
+                        <option value="Europe/London">🇬🇧 London</option>
+                        <option value="Asia/Tokyo">🇯🇵 Tokyo</option>
+                        <option value="Australia/Sydney">🇦🇺 Sydney</option>
+                        <option value="Europe/Paris">🇫🇷 Paris</option>
+                        <option value="Asia/Dubai">🇦🇪 Dubai</option>
+                        <option value="Asia/Kolkata">🇮🇳 Mumbai</option>
+                        <option value="Asia/Shanghai">🇨🇳 Shanghai</option>
+                        <option value="America/Los_Angeles">🇺🇸 Los Angeles</option>
+                        <option value="America/Chicago">🇺🇸 Chicago</option>
+                        <option value="Europe/Berlin">🇩🇪 Berlin</option>
+                        <option value="Asia/Singapore">🇸🇬 Singapore</option>
+                        <option value="Pacific/Auckland">🇳🇿 Auckland</option>
+                        <option value="America/Sao_Paulo">🇧🇷 São Paulo</option>
+                        <option value="Africa/Cairo">🇪🇬 Cairo</option>
+                        <option value="Asia/Seoul">🇰🇷 Seoul</option>
+                        <option value="Europe/Moscow">🇷🇺 Moscow</option>
+                        <option value="America/Toronto">🇨🇦 Toronto</option>
                     </select>
-                    <button id="wc-add" class="btn primary">Add City</button>
+                    <button id="wc-add" class="btn primary glow-btn"><i class="fas fa-plus"></i> Add City</button>
                 </div>
                 <div id="wc-list" class="grid-container"></div>
             </section>
@@ -114,8 +222,8 @@
             <!-- Weather Tab -->
             <section id="weather-tab" class="tab-pane">
                 <h2><i class="fas fa-cloud-sun"></i> Weather</h2>
-                <div class="weather-widget card" id="weather-container">
-                    <div class="loading">Fetching current location weather...</div>
+                <div class="weather-widget card glass" id="weather-container">
+                    <div class="loading"><i class="fas fa-spinner fa-spin"></i> Fetching weather...</div>
                 </div>
             </section>
 
@@ -123,19 +231,19 @@
             <section id="calendar-tab" class="tab-pane">
                 <h2><i class="fas fa-calendar-alt"></i> Calendar & Tasks</h2>
                 <div class="calendar-container grid-2-col">
-                    <div class="card calendar-view">
+                    <div class="card glass calendar-view">
                         <div class="cal-header">
-                            <button id="cal-prev" class="btn text-btn">&lt;</button>
+                            <button id="cal-prev" class="btn text-btn"><i class="fas fa-chevron-left"></i></button>
                             <h3 id="cal-month-year">Month YYYY</h3>
-                            <button id="cal-next" class="btn text-btn">&gt;</button>
+                            <button id="cal-next" class="btn text-btn"><i class="fas fa-chevron-right"></i></button>
                         </div>
                         <div class="cal-grid" id="cal-days"></div>
                     </div>
-                    <div class="card tasks-view">
+                    <div class="card glass tasks-view">
                         <h3>Tasks (<span id="task-date">Today</span>)</h3>
                         <form id="task-form" class="flex-form">
-                            <input type="text" id="task-input" placeholder="New Task..." required>
-                            <button type="submit" class="btn primary">+</button>
+                            <input type="text" id="task-input" placeholder="Add a new task..." required>
+                            <button type="submit" class="btn primary"><i class="fas fa-plus"></i></button>
                         </form>
                         <ul id="task-list" class="task-list"></ul>
                     </div>
@@ -144,33 +252,142 @@
 
             <!-- Pomodoro Tab -->
             <section id="pomodoro-tab" class="tab-pane">
-                <h2><i class="fas fa-brain"></i> Pomodoro</h2>
-                <div class="pomodoro-widget card text-center">
-                    <div class="pomo-mode" id="pomo-mode">Focus Mode</div>
-                    <div id="pomo-display" class="large-display">25:00</div>
+                <h2><i class="fas fa-brain"></i> Pomodoro Focus</h2>
+                <div class="pomodoro-widget card glass text-center">
+                    <div class="pomo-ring-wrap">
+                        <svg viewBox="0 0 200 200" class="pomo-svg">
+                            <circle cx="100" cy="100" r="90" class="ring-track"/>
+                            <circle cx="100" cy="100" r="90" class="ring-pomo" id="ring-pomo"/>
+                        </svg>
+                        <div class="pomo-center">
+                            <div class="pomo-mode" id="pomo-mode">Focus Mode</div>
+                            <div id="pomo-display" class="large-display">25:00</div>
+                        </div>
+                    </div>
+                    <div class="pomo-session-dots" id="pomo-dots"></div>
                     <div class="controls">
-                        <button id="pomo-start" class="btn primary">Start</button>
+                        <button id="pomo-start" class="btn primary glow-btn">Start</button>
                         <button id="pomo-reset" class="btn danger">Reset</button>
                     </div>
                     <div class="pomo-settings mt-top">
-                        <label>Focus (min): <input type="number" id="pomo-focus-len" value="25" min="1"></label>
-                        <label>Break (min): <input type="number" id="pomo-break-len" value="5" min="1"></label>
+                        <label>Focus: <input type="number" id="pomo-focus-len" value="25" min="1"> min</label>
+                        <label>Break: <input type="number" id="pomo-break-len" value="5" min="1"> min</label>
+                        <label>Long Break: <input type="number" id="pomo-long-break" value="15" min="1"> min</label>
                     </div>
                 </div>
+            </section>
+
+            <!-- Ambient Sounds Tab -->
+            <section id="ambient-tab" class="tab-pane">
+                <h2><i class="fas fa-music"></i> Ambient Sound Mixer</h2>
+                <p class="subtitle">Mix and match sounds for the perfect focus environment</p>
+                <div class="ambient-grid" id="ambient-grid">
+                    <!-- Generated by JS -->
+                </div>
+                <div class="ambient-master">
+                    <label>Master Volume</label>
+                    <input type="range" id="master-volume" min="0" max="100" value="60" class="slider">
+                </div>
+            </section>
+
+            <!-- Analytics Tab -->
+            <section id="analytics-tab" class="tab-pane">
+                <h2><i class="fas fa-chart-line"></i> Focus Analytics</h2>
+                <div class="analytics-grid">
+                    <div class="card glass stat-card">
+                        <div class="stat-icon"><i class="fas fa-fire"></i></div>
+                        <div class="stat-value" id="a-streak">0</div>
+                        <div class="stat-label">Day Streak</div>
+                    </div>
+                    <div class="card glass stat-card">
+                        <div class="stat-icon"><i class="fas fa-brain"></i></div>
+                        <div class="stat-value" id="a-pomos">0</div>
+                        <div class="stat-label">Pomodoros</div>
+                    </div>
+                    <div class="card glass stat-card">
+                        <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                        <div class="stat-value" id="a-focus-hrs">0h</div>
+                        <div class="stat-label">Focus Hours</div>
+                    </div>
+                    <div class="card glass stat-card">
+                        <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="stat-value" id="a-tasks-done">0</div>
+                        <div class="stat-label">Tasks Done</div>
+                    </div>
+                </div>
+                <div class="card glass">
+                    <h3>Weekly Focus Heatmap</h3>
+                    <div class="heatmap" id="heatmap"></div>
+                </div>
+                <div class="card glass">
+                    <h3>Focus History (Last 7 Days)</h3>
+                    <div class="bar-chart" id="bar-chart"></div>
+                </div>
+            </section>
+
+            <!-- Breathing Exercise Tab -->
+            <section id="breathing-tab" class="tab-pane">
+                <h2><i class="fas fa-lungs"></i> Breathing Exercise</h2>
+                <div class="breathing-widget card glass text-center">
+                    <div class="breath-mode-select">
+                        <button class="btn secondary breath-mode active" data-mode="478">4-7-8 Relaxing</button>
+                        <button class="btn secondary breath-mode" data-mode="box">Box Breathing</button>
+                        <button class="btn secondary breath-mode" data-mode="energize">Energize 2-2</button>
+                    </div>
+                    <div class="breath-ring-wrap">
+                        <svg viewBox="0 0 200 200" class="breath-svg">
+                            <circle cx="100" cy="100" r="90" class="ring-track"/>
+                            <circle cx="100" cy="100" r="90" class="ring-breath" id="ring-breath"/>
+                        </svg>
+                        <div class="breath-center">
+                            <div class="breath-circle" id="breath-circle"></div>
+                            <div class="breath-instruction" id="breath-instruction">Press Start</div>
+                            <div class="breath-count" id="breath-count"></div>
+                        </div>
+                    </div>
+                    <div class="breath-info" id="breath-info">Inhale 4s → Hold 7s → Exhale 8s</div>
+                    <div class="controls">
+                        <button id="breath-start" class="btn primary glow-btn">Start</button>
+                        <button id="breath-reset" class="btn danger">Reset</button>
+                    </div>
+                    <div class="breath-stats mt-top">
+                        <span><i class="fas fa-wind"></i> Sessions: <strong id="breath-sessions">0</strong></span>
+                        <span><i class="fas fa-clock"></i> Total: <strong id="breath-total-time">0m</strong></span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Time Capsule Tab -->
+            <section id="capsule-tab" class="tab-pane">
+                <h2><i class="fas fa-envelope-open-text"></i> Time Capsule</h2>
+                <p class="subtitle">Write messages to your future self — they unlock when the time arrives!</p>
+                <div class="card glass">
+                    <form id="capsule-form" class="capsule-form">
+                        <textarea id="capsule-message" placeholder="Dear future me..." rows="3" required></textarea>
+                        <div class="form-row">
+                            <input type="date" id="capsule-date" required>
+                            <input type="time" id="capsule-time" required>
+                            <button type="submit" class="btn primary glow-btn"><i class="fas fa-lock"></i> Seal Capsule</button>
+                        </div>
+                    </form>
+                </div>
+                <div id="capsule-list" class="capsule-list"></div>
             </section>
 
             <!-- Settings Tab -->
             <section id="settings-tab" class="tab-pane">
                 <h2><i class="fas fa-cog"></i> Settings & Stats</h2>
                 <div class="grid-2-col">
-                    <div class="card">
-                        <h3>Settings</h3>
+                    <div class="card glass">
+                        <h3>Appearance</h3>
                         <div class="setting-item">
                             <label>Theme</label>
                             <select id="theme-select">
-                                <option value="dark">Dark Mode</option>
-                                <option value="light">Light Mode</option>
-                                <option value="neon">Neon/Cyberpunk</option>
+                                <option value="dark">🌑 Dark Mode</option>
+                                <option value="light">☀️ Light Mode</option>
+                                <option value="neon">💜 Neon Cyberpunk</option>
+                                <option value="ocean">🌊 Ocean Depths</option>
+                                <option value="sunset">🌅 Sunset Glow</option>
                             </select>
                         </div>
                         <div class="setting-item">
@@ -181,41 +398,99 @@
                             </select>
                         </div>
                         <div class="setting-item">
-                            <label>Voice Commands</label>
-                            <button id="toggle-voice" class="btn secondary">Enable Voice Control</button>
-                            <div class="voice-status" id="voice-status">Say "Set alarm at 6 AM"</div>
+                            <label>Particles</label>
+                            <label class="switch">
+                                <input type="checkbox" id="toggle-particles" checked>
+                                <span class="switch-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label>Dynamic Sky</label>
+                            <label class="switch">
+                                <input type="checkbox" id="toggle-sky" checked>
+                                <span class="switch-slider"></span>
+                            </label>
                         </div>
                     </div>
-                    <div class="card">
-                        <h3>Statistics</h3>
-                        <ul class="stats-list">
-                            <li>Alarms Triggered: <span id="stat-alarms">0</span></li>
-                            <li>Snoozes Used: <span id="stat-snoozes">0</span></li>
-                            <li>Pomodoros Completed: <span id="stat-pomos">0</span></li>
-                        </ul>
+                    <div class="card glass">
+                        <h3>Controls</h3>
+                        <div class="setting-item">
+                            <label>Voice Commands</label>
+                            <button id="toggle-voice" class="btn secondary"><i class="fas fa-microphone"></i> Enable</button>
+                        </div>
+                        <div class="voice-status" id="voice-status">Say "stop alarm" or "snooze"</div>
+                        <div class="setting-item mt-top">
+                            <label>Keyboard Shortcuts</label>
+                            <button class="btn secondary" id="show-shortcuts"><i class="fas fa-keyboard"></i> View All</button>
+                        </div>
+                        <div class="setting-item mt-top">
+                            <label>Reset All Data</label>
+                            <button class="btn danger" id="reset-all"><i class="fas fa-trash"></i> Reset</button>
+                        </div>
                     </div>
                 </div>
             </section>
         </main>
     </div>
 
-    <!-- Alarm Modal / Math Challenge -->
+    <!-- Alarm Modal -->
     <div id="alarm-modal" class="modal hidden">
-        <div class="modal-content card">
-            <h2>⏰ ALARM RINGING!</h2>
-            <div id="alarm-time-display" class="large-text"></div>
-            
+        <div class="modal-content card glass">
+            <div class="alarm-modal-icon">⏰</div>
+            <h2>ALARM RINGING!</h2>
+            <div id="alarm-time-display" class="large-display mono-glow"></div>
+            <div id="alarm-label-display" class="alarm-modal-label"></div>
             <div id="math-challenge" class="hidden mt-top">
                 <p>Solve to dismiss:</p>
-                <div id="math-problem" class="large-text"></div>
-                <input type="number" id="math-answer" placeholder="Answer">
+                <div id="math-problem" class="math-display"></div>
+                <input type="number" id="math-answer" placeholder="Your answer">
             </div>
-
             <div class="modal-actions mt-top">
-                <button id="alarm-dismiss" class="btn danger">Dismiss</button>
+                <button id="alarm-dismiss" class="btn danger glow-btn">Dismiss</button>
                 <button id="alarm-snooze" class="btn secondary">Snooze (5m)</button>
             </div>
         </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Modal -->
+    <div id="shortcuts-modal" class="modal hidden">
+        <div class="modal-content card glass" style="text-align:left; max-width:500px;">
+            <h2 style="text-align:center;"><i class="fas fa-keyboard"></i> Keyboard Shortcuts</h2>
+            <div class="shortcut-list">
+                <div class="shortcut-row"><kbd>1</kbd>-<kbd>9</kbd> <span>Switch tabs</span></div>
+                <div class="shortcut-row"><kbd>Space</kbd> <span>Start/Pause (Stopwatch/Timer/Pomodoro)</span></div>
+                <div class="shortcut-row"><kbd>R</kbd> <span>Reset current tool</span></div>
+                <div class="shortcut-row"><kbd>L</kbd> <span>Record Lap</span></div>
+                <div class="shortcut-row"><kbd>T</kbd> <span>Toggle Theme</span></div>
+                <div class="shortcut-row"><kbd>F</kbd> <span>Toggle Fullscreen</span></div>
+                <div class="shortcut-row"><kbd>M</kbd> <span>Mute/Unmute ambient</span></div>
+                <div class="shortcut-row"><kbd>?</kbd> <span>Show this dialog</span></div>
+                <div class="shortcut-row"><kbd>Esc</kbd> <span>Close modals</span></div>
+            </div>
+            <div class="text-center mt-top">
+                <button class="btn primary" id="close-shortcuts">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sunrise Overlay for alarm -->
+    <div id="sunrise-overlay" class="sunrise-overlay hidden"></div>
+
+    <!-- Zen Focus Mode Overlay -->
+    <div id="zen-overlay" class="zen-overlay hidden">
+        <div class="zen-content">
+            <div class="zen-time" id="zen-time">00:00:00</div>
+            <div class="zen-date" id="zen-date"></div>
+            <div class="zen-quote" id="zen-quote"></div>
+            <div class="zen-breath-hint">Breathe in... Breathe out...</div>
+            <button class="btn danger zen-exit" id="zen-exit"><i class="fas fa-times"></i> Exit Zen Mode</button>
+        </div>
+        <canvas id="zen-canvas"></canvas>
+    </div>
+
+    <!-- XP Notification Toast -->
+    <div id="xp-toast" class="xp-toast hidden">
+        <i class="fas fa-star"></i> +<span id="xp-toast-amount">10</span> XP
     </div>
 
     <script src="app.js"></script>
